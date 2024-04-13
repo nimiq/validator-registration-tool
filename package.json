@@ -3,18 +3,18 @@
   "version": "1.0.0",
   "main": "validator-registration.js",
   "homepage": "https://nimiq.com/",
-  "description": "",
+  "description": "Nimiq PoS validator registration tool",
   "author": {
     "name": "The Nimiq Core Development Team",
     "url": "https://nimiq.com/"
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/nimiq/core-js/issues"
+    "url": "https://github.com/nimiq/validator-registration-tool/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nimiq/core-js.git"
+    "url": "https://github.com/nimiq/validator-registration-tool.git"
   },
   "engines": {
     "node": ">=16.20.2"
