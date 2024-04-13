@@ -1,0 +1,32 @@
+{
+  "name": "@nimiq/validator-registration",
+  "version": "1.0.0",
+  "main": "validator-registration.js",
+  "homepage": "https://nimiq.com/",
+  "description": "",
+  "author": {
+    "name": "The Nimiq Core Development Team",
+    "url": "https://nimiq.com/"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/nimiq/core-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nimiq/core-js.git"
+  },
+  "engines": {
+    "node": ">=16.20.2"
+  },
+  "files": [
+    "validator-registration.js"
+  ],
+  "dependencies": {
+    "@nimiq/core": "^1.6.2",
+    "@nimiq/core-web": "2.0.0-alpha.20.3",
+    "json5": "^2.1.0",
+    "lodash.merge": "^4.6.2",
+    "minimist": "^1.2.8"
+  }
+}
