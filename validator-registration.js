@@ -108,7 +108,7 @@ Options:
 const START = Date.now();
 const argv = require('minimist')(process.argv.slice(2));
 const Nimiq = require('@nimiq/core');
-const NimiqPOS = require ('@nimiq/core-web');
+const NimiqPOS = require('@nimiq/core-web');
 const config = require('./Config.js')(argv);
 const fs = require('fs');
 const JSON5 = require('json5');
@@ -144,7 +144,7 @@ const $ = {};
         return help();
     }
 
-    if (!argv.validator){
+    if (!argv.validator) {
 
         const pathToValidatorsFile = 'validator-keys.json';
 
@@ -160,7 +160,7 @@ const $ = {};
         console.log('Generating new validator paramaters... \n\n');
 
         // First we generate the validator address parameters.
-        const validatorKeyPair =  NimiqPOS.KeyPair.generate();
+        const validatorKeyPair = NimiqPOS.KeyPair.generate();
         const validatorAddress = validatorKeyPair.toAddress();
 
         console.log('   Validator Account: ');
@@ -172,7 +172,7 @@ const $ = {};
         console.log(validatorKeyPair.privateKey.toHex());
 
         // Now we generate the signing key.
-        const signingKeyPair =  NimiqPOS.KeyPair.generate();
+        const signingKeyPair = NimiqPOS.KeyPair.generate();
 
         console.log('\n   Signing key: ');
         console.log('Public key: ');
@@ -220,10 +220,10 @@ const $ = {};
 
         console.log('\n\nValidator configuration file sucessfully written (validator-keys.json).');
 
-       process.exit(0);
+        process.exit(0);
     }
 
-    if (argv.network){
+    if (argv.network) {
         config.network = argv.network
     }
 
@@ -278,7 +278,7 @@ const $ = {};
     // Extract the validator configuration (we read the private keys from the config file)
     let validatorPrivateKey = Nimiq.PrivateKey.unserialize(Nimiq.BufferUtils.fromHex(validator_config.ValidatorAccount.PrivateKey));
     let signingPrivateKey = Nimiq.PrivateKey.unserialize(Nimiq.BufferUtils.fromHex(validator_config.SigningKey.PrivateKey));
-    let votingSecretKey =  NimiqPOS.BLSSecretKey.fromHex(validator_config.VotingKey.SecretKey);
+    let votingSecretKey = NimiqPOS.BLSSecretKey.fromHex(validator_config.VotingKey.SecretKey);
 
     // Create the KeyPairs
     const validatorKeyPair = Nimiq.KeyPair.derive(validatorPrivateKey);
@@ -290,6 +290,9 @@ const $ = {};
 
     // Get the transaction's data
     let data = validator.get_serialized_data();
+
+    // List of registration transaction hashes that are broadcasted to the network
+    let transactions = [];
 
     // We monitor the status of the validator registration transactions
     $.client.addTransactionListener((tx) => {
@@ -310,10 +313,10 @@ const $ = {};
             const balance = Nimiq.Policy.lunasToCoins(account.balance)
 
             Nimiq.Log.i(TAG, `Validator address ${validatorKeyPair.publicKey.toAddress().toUserFriendlyAddress()}.`
-            + (account ? ` Balance: ${balance} NIM` : ''));
+                + (account ? ` Balance: ${balance} NIM` : ''));
 
             // We need to send 6 txns, 1 Luna each
-            if (account.balance < 6){
+            if (account.balance < 6) {
                 console.error('Not enough funds to pay the validator registration txns');
                 process.exit(1);
             }
@@ -330,12 +333,17 @@ const $ = {};
 
                 let result = await $.client.sendTransaction(transaction);
 
-                console.log(' Transaction result: ');
+                console.log('Transaction result:');
                 console.log(result);
 
-                console.log(' Transaction hash: ');
-                console.log(transaction.hash().toHex());
+                const hash = transaction.hash().toHex();
+                transactions.push(hash);
+
+                console.log('Transaction hash:');
+                console.log(hash);
             }
+            Nimiq.Log.i(TAG, 'All the registration transactions have been broadcasted to the network.');
+            Nimiq.Log.i(TAG, 'Waiting for them to be confirmed, which takes around 10 minutes. Once all are confirmed, this tool will exit automatically.');
         }
     });
 
@@ -351,6 +359,23 @@ const $ = {};
     $.client.addHeadChangedListener(async (hash, reason) => {
         const head = await $.client.getBlock(hash, false);
         Nimiq.Log.i(TAG, `Now at block: ${head.height} (${reason})`);
+
+        // All the transactions have been broadcasted to the network
+        if (transactions.length === 6) {
+            const transactionDetails = await Promise.all(
+                transactions
+                    .map(async (hash) => await $.client.getTransaction(hash))
+            );
+
+            // Check if all those transactions are confirmed
+            if (transactionDetails.every((tx) => tx.state === 'confirmed')) {
+                Nimiq.Log.i(TAG, 'All the registration transactions have been confirmed.');
+                Nimiq.Log.i(TAG, 'Exiting now...');
+                process.exit(0);
+            } else {
+                Nimiq.Log.i(TAG, 'Not all the registration transactions have been confirmed. Waiting for the next block...');
+            }
+        }
     });
 
     $.network.on('peer-joined', (peer) => {
