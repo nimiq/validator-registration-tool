@@ -26,4 +26,4 @@ Options:
 
 ## Documentation
 
-Documentation is available in the [Nimiq developer center](https://www.nimiq.com/developers/build/migration-guide).
+Documentation is available in the [Nimiq developer center](https://www.nimiq.com/developers/migration/migration-validators).
