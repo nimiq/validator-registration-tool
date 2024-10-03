@@ -24,6 +24,8 @@ Options:
                        If this argument is not provided, the tool connects to the "test" network by default
 ```
 
+When run without any options, a new `validator-keys.json` file with random keys is securely generated.
+
 ## Documentation
 
 Documentation is available in the [Nimiq developer center](https://www.nimiq.com/developers/migration/migration-validators).
