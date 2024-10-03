@@ -1,13 +1,13 @@
-# Nimiq PoS validator registration tool
+# Nimiq PoS Validator Registration Tool
 
-This tool works by sending transactions to the Nimiq PoW blockchain in a specific
+This command-line tool works by sending 6 transactions to the Nimiq PoW blockchain in a specific
 format. For further information check the [documentation](#documentation).
 
 ## Installation
 
-Make sure you have [Node.js](https://nodejs.org) >= v16.20.2 installed.
+Make sure you have [Node.js](https://nodejs.org) >= v16.20.2 and [Yarn Classic](https://classic.yarnpkg.com/en/docs/install) 1.x installed.
 
-Then navigate to this repo and execute:
+Then navigate to this repo and install the dependencies by running:
 ```
 yarn
 ```
@@ -15,13 +15,13 @@ yarn
 ## Basic usage
 
 ```
-node validator.js [options]
+node validator-registration.js [options]
 
 Options:
     --help             Display this help page
     --validator        Path to the validator specification file (JSONC)
-    --network          The network that should be used to register a validator. 
-                       If this argument is not provided, we connect to the test network by default
+    --network          "test" or "main" - The network that should be used to register a validator. 
+                       If this argument is not provided, the tool connects to the "test" network by default
 ```
 
 ## Documentation
